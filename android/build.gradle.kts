@@ -10,7 +10,7 @@ buildscript {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.20")
         classpath("com.google.gms:google-services:4.4.0")
         classpath("com.google.dagger:hilt-android-gradle-plugin:2.50")
-        classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.9")
+        classpath("com.google.firebase:firebase-crashlytics-gradle:3.0.6")
     }
 }
 
@@ -21,7 +21,7 @@ plugins {
     id("com.google.devtools.ksp") version "1.9.20-1.0.14" apply false
     id("com.google.dagger.hilt.android") version "2.50" apply false
     id("com.google.gms.google-services") version "4.4.0" apply false
-    id("com.google.firebase.crashlytics") version "2.9.9" apply false
+    id("com.google.firebase.crashlytics") version "3.0.6" apply false
     id("org.jlleitschuh.gradle.ktlint") version "11.6.1" apply false
     id("com.diffplug.spotless") version "6.23.3" apply false
 }
