@@ -94,39 +94,19 @@ jobs:
         if: always()
         run: rm -f android/app/release-keystore.jks
 
-  deploy-google-play:
-    name: Deploy to Google Play Internal Track
-    runs-on: ubuntu-latest
-    needs: [validate-tag, build-release]
-    environment: production
+  # Google Play deployment disabled - deploying to GitHub Releases only
+  # To enable Google Play deployment, uncomment this job and add required secrets:
+  # - GOOGLE_PLAY_SERVICE_ACCOUNT_JSON
+  #
+  # deploy-google-play:
+  #   name: Deploy to Google Play Internal Track
+  #   runs-on: ubuntu-latest
+  #   needs: [validate-tag, build-release]
+  #   environment: production
+  #   steps:
+  #     - name: Upload to Google Play
+  #       ...
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Download signed AAB
-        uses: actions/download-artifact@v4
-        with:
-          name: familyhub-release-${{ needs.validate-tag.outputs.version }}
-
-      - name: Set up Google Play credentials
-        run: |
-          echo "${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}" > service-account.json
-
-      - name: Upload to Google Play Internal Track
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJson: service-account.json
-          packageName: com.familyhub.app
-          releaseFiles: app-release.aab
-          track: internal
-          status: completed
-          whatsNewDirectory: android/release-notes/
-          mappingFile: android/app/build/outputs/mapping/release/mapping.txt
-
-      - name: Clean up credentials
-        if: always()
-        run: rm -f service-account.json
 
   build-and-deploy-functions:
     name: Deploy Firebase Functions
@@ -188,7 +168,7 @@ jobs:
   create-github-release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
-    needs: [validate-tag, build-release, deploy-google-play, build-and-deploy-functions]
+    needs: [validate-tag, build-release, build-and-deploy-functions]
 
     steps:
       - name: Checkout code
@@ -226,12 +206,12 @@ jobs:
             ${{ steps.changelog.outputs.changelog }}
 
             ### 📦 Downloads
-            - **Android App**: Available on Google Play Internal Track
+            - **Android APK/AAB**: Download from attachments below
             - **Firebase Functions**: Deployed to production
 
             ### 🔗 Links
-            - [Google Play Console](https://play.google.com/console)
             - [Firebase Console](https://console.firebase.google.com)
+            - [GitHub Repository](https://github.com/${{ github.repository }})
 
             ---
             **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ needs.validate-tag.outputs.tag }}...HEAD
@@ -266,7 +246,7 @@ jobs:
   deployment-success:
     name: Deployment Complete
     runs-on: ubuntu-latest
-    needs: [deploy-google-play, build-and-deploy-functions, create-github-release]
+    needs: [build-and-deploy-functions, create-github-release]
 
     steps:
       - name: Success
