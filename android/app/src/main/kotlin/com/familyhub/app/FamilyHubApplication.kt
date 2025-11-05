@@ -15,9 +15,8 @@ class FamilyHubApplication : Application() {
         super.onCreate()
 
         // Initialize Timber for logging
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
-        }
+        // Always enable debug logging for now (TODO: Use BuildConfig.DEBUG once KSP issues are resolved)
+        Timber.plant(Timber.DebugTree())
 
         Timber.d("FamilyHub Application initialized")
     }
