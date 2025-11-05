@@ -69,8 +69,8 @@ dependencies {
     implementation("androidx.wear.compose:compose-navigation:1.3.0")
 
     // Wear Tiles
-    implementation("androidx.wear.tiles:tiles:1.3.0")
-    implementation("androidx.wear.tiles:tiles-material:1.3.0")
+    implementation("androidx.wear.tiles:tiles:1.5.0")
+    implementation("androidx.wear.tiles:tiles-material:1.5.0")
 
     // Wear Complications
     implementation("androidx.wear.watchface:watchface-complications-data-source-ktx:1.2.0")
