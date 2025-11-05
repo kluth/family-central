@@ -5,13 +5,18 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.familyhub.app.ui.home.HomeScreen
+import com.familyhub.feature.calendar.ui.CalendarScreen
+import com.familyhub.feature.chat.ui.ChatScreen
+import com.familyhub.feature.profile.ui.ProfileScreen
 import com.familyhub.feature.profile.ui.SignInScreen
 import com.familyhub.feature.profile.ui.SignUpScreen
+import com.familyhub.feature.shared_data.ui.ShoppingListScreen
 import com.familyhub.feature.tasks.ui.TaskListScreen
 
 /**
  * NavGraph
- * Main navigation graph for the app
+ * Main navigation graph for the app with all features
  */
 @Composable
 fun NavGraph(
@@ -59,24 +64,25 @@ fun NavGraph(
             // TODO: Implement ForgotPasswordScreen
         }
 
-        // Home Screen (redirects to tasks for now)
+        // Home Dashboard Screen
         composable(NavRoute.Home.route) {
-            // TODO: Implement proper home dashboard
-            // For now, navigate to tasks
-            TaskListScreen(
-                familyId = "demo-family-123", // TODO: Get actual family ID from auth
-                onNavigateToTaskDetail = { taskId ->
-                    // TODO: Navigate to task detail
+            HomeScreen(
+                onNavigateToTasks = {
+                    navController.navigate(NavRoute.Tasks.route)
                 },
-                onNavigateToCreateTask = {
-                    // TODO: Navigate to create task
+                onNavigateToChat = {
+                    navController.navigate(NavRoute.Chat.route)
+                },
+                onNavigateToCalendar = {
+                    navController.navigate(NavRoute.Calendar.route)
+                },
+                onNavigateToShopping = {
+                    navController.navigate(NavRoute.ShoppingList.route)
+                },
+                onNavigateToProfile = {
+                    navController.navigate(NavRoute.Profile.route)
                 }
             )
-        }
-
-        // Family Selection Screen (placeholder)
-        composable(NavRoute.FamilySelection.route) {
-            // TODO: Implement FamilySelectionScreen
         }
 
         // Tasks Screen
@@ -92,24 +98,46 @@ fun NavGraph(
             )
         }
 
-        // Chat Screen (placeholder)
+        // Chat Screen
         composable(NavRoute.Chat.route) {
-            // TODO: Implement ChatScreen
+            ChatScreen(
+                familyId = "demo-family-123", // TODO: Get actual family ID from auth
+                currentUserId = "current-user-id", // TODO: Get from auth
+                currentUserName = "Current User" // TODO: Get from auth
+            )
         }
 
-        // Calendar Screen (placeholder)
+        // Calendar Screen
         composable(NavRoute.Calendar.route) {
-            // TODO: Implement CalendarScreen
+            CalendarScreen(
+                familyId = "demo-family-123" // TODO: Get actual family ID from auth
+            )
         }
 
-        // Shopping List Screen (placeholder)
+        // Shopping List Screen
         composable(NavRoute.ShoppingList.route) {
-            // TODO: Implement ShoppingListScreen
+            ShoppingListScreen(
+                familyId = "demo-family-123" // TODO: Get actual family ID from auth
+            )
         }
 
-        // Profile Screen (placeholder)
+        // Profile Screen
         composable(NavRoute.Profile.route) {
-            // TODO: Implement ProfileScreen
+            ProfileScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onSignOut = {
+                    navController.navigate(NavRoute.SignIn.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        // Family Selection Screen (placeholder)
+        composable(NavRoute.FamilySelection.route) {
+            // TODO: Implement FamilySelectionScreen
         }
     }
 }
