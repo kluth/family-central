@@ -175,6 +175,25 @@ jobs:
 
       - name: Create Release
         run: |
+          # Prepare release files
+          RELEASE_FILES=()
+
+          # Check which APKs exist and add them to release
+          if [ -f ./release-artifacts/FamilyHub-${{ inputs.version }}-debug.apk ]; then
+            RELEASE_FILES+=(./release-artifacts/FamilyHub-${{ inputs.version }}-debug.apk)
+            echo "✅ Phone APK will be included in release"
+          else
+            echo "⚠️ Phone APK not found, will skip in release"
+          fi
+
+          if [ -f ./release-artifacts/FamilyHub-Wear-${{ inputs.version }}-debug.apk ]; then
+            RELEASE_FILES+=(./release-artifacts/FamilyHub-Wear-${{ inputs.version }}-debug.apk)
+            echo "✅ Wear APK will be included in release"
+          else
+            echo "❌ Wear APK not found, release will fail"
+            exit 1
+          fi
+
           # Create release notes file
           cat > release_notes.md << 'RELEASE_NOTES_EOF'
             ## 🎉 FamilyHub Platform - ${{ inputs.release_name }}
@@ -376,12 +395,17 @@ jobs:
           RELEASE_NOTES_EOF
 
           # Create GitHub release using official GitHub CLI
+          # Only include files that exist
+          PRERELEASE_FLAG=""
+          if [ "${{ inputs.prerelease }}" == "true" ]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
+
           gh release create "v${{ inputs.version }}" \
-            ./release-artifacts/FamilyHub-${{ inputs.version }}-debug.apk \
-            ./release-artifacts/FamilyHub-Wear-${{ inputs.version }}-debug.apk \
+            "${RELEASE_FILES[@]}" \
             --title "${{ inputs.release_name }}" \
             --notes-file release_notes.md \
-            ${{ inputs.prerelease == 'true' && '--prerelease' || '' }}
+            $PRERELEASE_FLAG
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
