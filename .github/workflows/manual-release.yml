@@ -168,12 +168,15 @@ jobs:
           echo "branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           echo "build_date=$(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_OUTPUT
 
+      - name: Install GitHub CLI
+        run: |
+          type gh &>/dev/null || echo "GitHub CLI already installed"
+          gh --version
+
       - name: Create Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v${{ inputs.version }}
-          name: ${{ inputs.release_name }}
-          body: |
+        run: |
+          # Create release notes file
+          cat > release_notes.md << 'RELEASE_NOTES_EOF'
             ## 🎉 FamilyHub Platform - ${{ inputs.release_name }}
 
             **Version:** ${{ inputs.version }}
@@ -370,13 +373,17 @@ jobs:
             Please report any issues or feedback on the GitHub repository issues page.
 
             **Enjoy testing the FamilyHub Platform! 🎉**
-          files: |
-            ./release-artifacts/FamilyHub-${{ inputs.version }}-debug.apk
-            ./release-artifacts/FamilyHub-Wear-${{ inputs.version }}-debug.apk
-          draft: false
-          prerelease: ${{ inputs.prerelease }}
+          RELEASE_NOTES_EOF
+
+          # Create GitHub release using official GitHub CLI
+          gh release create "v${{ inputs.version }}" \
+            ./release-artifacts/FamilyHub-${{ inputs.version }}-debug.apk \
+            ./release-artifacts/FamilyHub-Wear-${{ inputs.version }}-debug.apk \
+            --title "${{ inputs.release_name }}" \
+            --notes-file release_notes.md \
+            ${{ inputs.prerelease == 'true' && '--prerelease' || '' }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release Summary
         run: |

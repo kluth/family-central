@@ -232,31 +232,16 @@ jobs:
         run: npm run build
         working-directory: ./functions
 
-      - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only functions --project ${{ secrets.FIREBASE_PROJECT_ID }}
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
 
-      - name: Deploy Firestore rules
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only firestore:rules --project ${{ secrets.FIREBASE_PROJECT_ID }}
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-
-      - name: Deploy Firestore indexes
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only firestore:indexes --project ${{ secrets.FIREBASE_PROJECT_ID }}
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-
-      - name: Deploy Storage rules
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only storage --project ${{ secrets.FIREBASE_PROJECT_ID }}
+      - name: Deploy to Firebase (Functions, Rules, Indexes, Storage)
+        run: |
+          # Deploy all Firebase resources using official Firebase CLI
+          firebase deploy \
+            --only functions,firestore:rules,firestore:indexes,storage \
+            --project ${{ secrets.FIREBASE_PROJECT_ID }} \
+            --non-interactive
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
@@ -302,12 +287,15 @@ jobs:
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+      - name: Install GitHub CLI
+        run: |
+          type gh &>/dev/null || echo "GitHub CLI already installed"
+          gh --version
+
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ needs.validate-tag.outputs.tag }}
-          name: Release ${{ needs.validate-tag.outputs.version }}
-          body: |
+        run: |
+          # Create release notes file
+          cat > release_notes.md << 'RELEASE_NOTES_EOF'
             ## FamilyHub Platform Release ${{ needs.validate-tag.outputs.version }}
 
             ### 🚀 What's New
@@ -355,14 +343,18 @@ jobs:
 
             ---
             **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ needs.validate-tag.outputs.tag }}...HEAD
-          files: |
-            ./artifacts/app-release.aab
-            ./artifacts/FamilyHub-${{ needs.validate-tag.outputs.version }}.apk
-            ./artifacts/FamilyHub-Wear-${{ needs.validate-tag.outputs.version }}.apk
-          draft: false
-          prerelease: false
+          RELEASE_NOTES_EOF
+
+          # Create GitHub release using official GitHub CLI
+          gh release create "${{ needs.validate-tag.outputs.tag }}" \
+            ./artifacts/app-release.aab \
+            ./artifacts/FamilyHub-${{ needs.validate-tag.outputs.version }}.apk \
+            ./artifacts/FamilyHub-Wear-${{ needs.validate-tag.outputs.version }}.apk \
+            --title "Release ${{ needs.validate-tag.outputs.version }}" \
+            --notes-file release_notes.md \
+            --latest
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   notify-deployment:
     name: Send Deployment Notifications
