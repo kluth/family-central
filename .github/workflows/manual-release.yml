@@ -91,19 +91,16 @@ jobs:
           ./gradlew :wear:assembleDebug \
             --stacktrace \
             --no-daemon \
-            -PenableCodeQuality=false \
             || echo "Wear build failed"
 
           echo "Building Phone APK..."
           ./gradlew :app:assembleDebug \
             --stacktrace \
             --no-daemon \
-            -PenableCodeQuality=false \
             || echo "Phone app build failed, continuing with Wear only"
         working-directory: ./android
         env:
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx2g -Dorg.gradle.daemon=false"
-          CI: true
 
       - name: Rename debug APKs
         run: |
