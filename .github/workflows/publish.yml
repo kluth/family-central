@@ -72,6 +72,14 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
+      - name: Build release APKs (Phone + Wear)
+        run: ./gradlew assembleRelease :wear:assembleRelease --stacktrace
+        working-directory: ./android
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
       - name: Sign AAB
         run: |
           jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
@@ -81,14 +89,57 @@ jobs:
             android/app/build/outputs/bundle/release/app-release.aab \
             ${{ secrets.KEY_ALIAS }}
 
+      - name: Sign Phone APK
+        run: |
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+            -keystore android/app/release-keystore.jks \
+            -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
+            -keypass ${{ secrets.KEY_PASSWORD }} \
+            android/app/build/outputs/apk/release/app-release-unsigned.apk \
+            ${{ secrets.KEY_ALIAS }}
+
+      - name: Sign Wear OS APK
+        run: |
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+            -keystore android/app/release-keystore.jks \
+            -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
+            -keypass ${{ secrets.KEY_PASSWORD }} \
+            android/wear/build/outputs/apk/release/wear-release-unsigned.apk \
+            ${{ secrets.KEY_ALIAS }}
+
       - name: Verify AAB signature
         run: jarsigner -verify android/app/build/outputs/bundle/release/app-release.aab
+
+      - name: Verify Phone APK signature
+        run: jarsigner -verify android/app/build/outputs/apk/release/app-release-unsigned.apk
+
+      - name: Verify Wear APK signature
+        run: jarsigner -verify android/wear/build/outputs/apk/release/wear-release-unsigned.apk
+
+      - name: Rename APKs to signed
+        run: |
+          mv android/app/build/outputs/apk/release/app-release-unsigned.apk \
+             android/app/build/outputs/apk/release/FamilyHub-${{ needs.validate-tag.outputs.version }}.apk
+          mv android/wear/build/outputs/apk/release/wear-release-unsigned.apk \
+             android/wear/build/outputs/apk/release/FamilyHub-Wear-${{ needs.validate-tag.outputs.version }}.apk
 
       - name: Upload signed AAB
         uses: actions/upload-artifact@v4
         with:
-          name: familyhub-release-${{ needs.validate-tag.outputs.version }}
+          name: familyhub-aab-${{ needs.validate-tag.outputs.version }}
           path: android/app/build/outputs/bundle/release/app-release.aab
+
+      - name: Upload signed Phone APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: familyhub-phone-apk-${{ needs.validate-tag.outputs.version }}
+          path: android/app/build/outputs/apk/release/FamilyHub-${{ needs.validate-tag.outputs.version }}.apk
+
+      - name: Upload signed Wear APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: familyhub-wear-apk-${{ needs.validate-tag.outputs.version }}
+          path: android/wear/build/outputs/apk/release/FamilyHub-Wear-${{ needs.validate-tag.outputs.version }}.apk
 
       - name: Clean up keystore
         if: always()
@@ -179,7 +230,20 @@ jobs:
       - name: Download AAB
         uses: actions/download-artifact@v4
         with:
-          name: familyhub-release-${{ needs.validate-tag.outputs.version }}
+          name: familyhub-aab-${{ needs.validate-tag.outputs.version }}
+          path: ./artifacts/
+
+      - name: Download Phone APK
+        uses: actions/download-artifact@v4
+        with:
+          name: familyhub-phone-apk-${{ needs.validate-tag.outputs.version }}
+          path: ./artifacts/
+
+      - name: Download Wear APK
+        uses: actions/download-artifact@v4
+        with:
+          name: familyhub-wear-apk-${{ needs.validate-tag.outputs.version }}
+          path: ./artifacts/
 
       - name: Generate changelog
         id: changelog
@@ -206,8 +270,40 @@ jobs:
             ${{ steps.changelog.outputs.changelog }}
 
             ### 📦 Downloads
-            - **Android APK/AAB**: Download from attachments below
+
+            #### 📱 Android Phone App
+            - **FamilyHub-${{ needs.validate-tag.outputs.version }}.apk** - Direct install APK for Android phones
+            - **app-release.aab** - Android App Bundle for Google Play Store
+
+            #### ⌚ Wear OS App
+            - **FamilyHub-Wear-${{ needs.validate-tag.outputs.version }}.apk** - Direct install APK for Wear OS watches
+
+            ### 📲 Installation Instructions
+
+            #### Phone App Installation:
+            1. Download `FamilyHub-${{ needs.validate-tag.outputs.version }}.apk`
+            2. Enable "Install from Unknown Sources" in Android settings
+            3. Open the APK file and follow installation prompts
+            4. Grant required permissions when launching the app
+
+            #### Wear OS Installation:
+            1. First install the phone app
+            2. Download `FamilyHub-Wear-${{ needs.validate-tag.outputs.version }}.apk`
+            3. Use `adb install` or a file manager app on your watch
+            4. Grant health and sensor permissions
+
+            ### ✨ Features
+            - 📋 **Tasks**: Family task management with priorities
+            - 💬 **Chat**: Real-time family messaging
+            - 📅 **Calendar**: Shared family events and schedules
+            - 🛒 **Shopping**: Collaborative shopping lists
+            - 👤 **Profile**: User settings and preferences
+            - ⌚ **Wear OS**: Full companion app with health tracking
+
+            ### 🔥 Backend
             - **Firebase Functions**: Deployed to production
+            - **Firestore Rules**: Updated and deployed
+            - **Storage Rules**: Updated and deployed
 
             ### 🔗 Links
             - [Firebase Console](https://console.firebase.google.com)
@@ -215,7 +311,10 @@ jobs:
 
             ---
             **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ needs.validate-tag.outputs.tag }}...HEAD
-          files: app-release.aab
+          files: |
+            ./artifacts/app-release.aab
+            ./artifacts/FamilyHub-${{ needs.validate-tag.outputs.version }}.apk
+            ./artifacts/FamilyHub-Wear-${{ needs.validate-tag.outputs.version }}.apk
           draft: false
           prerelease: false
         env:
