@@ -1,7 +1,7 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
     id("kotlin-parcelize")
 }
 
@@ -41,6 +41,9 @@ dependencies {
 
     implementation("androidx.core:core-ktx:${rootProject.extra["coreKtxVersion"]}")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${rootProject.extra["coroutinesVersion"]}")
+
+    // Dependency Injection - javax.inject for @Inject annotation
+    implementation("javax.inject:javax.inject:1")
 
     // Testing
     testImplementation("junit:junit:${rootProject.extra["junitVersion"]}")
