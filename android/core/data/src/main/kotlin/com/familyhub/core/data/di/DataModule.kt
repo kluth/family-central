@@ -1,12 +1,16 @@
 package com.familyhub.core.data.di
 
 import com.familyhub.core.data.repository.FirebaseAuthRepository
+import com.familyhub.core.data.repository.FirebaseCalendarRepository
 import com.familyhub.core.data.repository.FirebaseChatRepository
 import com.familyhub.core.data.repository.FirebaseFamilyRepository
+import com.familyhub.core.data.repository.FirebaseShoppingListRepository
 import com.familyhub.core.data.src.main.kotlin.com.familyhub.core.data.repository.FirebaseTaskRepository
 import com.familyhub.core.domain.repository.AuthRepository
+import com.familyhub.core.domain.repository.CalendarRepository
 import com.familyhub.core.domain.repository.ChatRepository
 import com.familyhub.core.domain.repository.FamilyRepository
+import com.familyhub.core.domain.repository.ShoppingListRepository
 import com.familyhub.core.domain.repository.TaskRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -65,4 +69,16 @@ abstract class RepositoryModule {
     abstract fun bindChatRepository(
         impl: FirebaseChatRepository
     ): ChatRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCalendarRepository(
+        impl: FirebaseCalendarRepository
+    ): CalendarRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindShoppingListRepository(
+        impl: FirebaseShoppingListRepository
+    ): ShoppingListRepository
 }
