@@ -9,7 +9,7 @@ buildscript {
         classpath("com.android.tools.build:gradle:8.2.0")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.20")
         classpath("com.google.gms:google-services:4.4.0")
-        classpath("com.google.dagger:hilt-android-gradle-plugin:2.48.1")
+        classpath("com.google.dagger:hilt-android-gradle-plugin:2.50")
         classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.9")
     }
 }
@@ -18,7 +18,8 @@ plugins {
     id("com.android.application") version "8.2.0" apply false
     id("com.android.library") version "8.2.0" apply false
     id("org.jetbrains.kotlin.android") version "1.9.20" apply false
-    id("com.google.dagger.hilt.android") version "2.48.1" apply false
+    id("com.google.devtools.ksp") version "1.9.20-1.0.14" apply false
+    id("com.google.dagger.hilt.android") version "2.50" apply false
     id("com.google.gms.google-services") version "4.4.0" apply false
     id("com.google.firebase.crashlytics") version "2.9.9" apply false
     id("org.jlleitschuh.gradle.ktlint") version "11.6.1" apply false
@@ -46,6 +47,7 @@ extra.apply {
 
     // Kotlin
     set("kotlinVersion", "1.9.20")
+    set("kspVersion", "1.9.20-1.0.14")
     set("coroutinesVersion", "1.7.3")
 
     // AndroidX
@@ -62,8 +64,8 @@ extra.apply {
     // Firebase
     set("firebaseBomVersion", "32.7.0")
 
-    // Hilt
-    set("hiltVersion", "2.48.1")
+    // Hilt (Updated to 2.50 for KSP support)
+    set("hiltVersion", "2.50")
     set("hiltNavigationComposeVersion", "1.1.0")
 
     // Networking

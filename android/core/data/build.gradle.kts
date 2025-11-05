@@ -2,7 +2,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -53,7 +53,7 @@ dependencies {
 
     // Hilt
     implementation("com.google.dagger:hilt-android:${rootProject.extra["hiltVersion"]}")
-    kapt("com.google.dagger:hilt-android-compiler:${rootProject.extra["hiltVersion"]}")
+    ksp("com.google.dagger:hilt-android-compiler:${rootProject.extra["hiltVersion"]}")
 
     // Logging
     implementation("com.jakewharton.timber:timber:5.0.1")
@@ -65,8 +65,4 @@ dependencies {
     testImplementation("com.google.truth:truth:${rootProject.extra["truthVersion"]}")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${rootProject.extra["coroutinesVersion"]}")
     testImplementation("app.cash.turbine:turbine:${rootProject.extra["turbineVersion"]}")
-}
-
-kapt {
-    correctErrorTypes = true
 }

@@ -4,7 +4,7 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("com.google.dagger.hilt.android")
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
     id("kotlin-parcelize")
 }
 
@@ -131,7 +131,7 @@ dependencies {
 
     // Hilt
     implementation("com.google.dagger:hilt-android:${rootProject.extra["hiltVersion"]}")
-    kapt("com.google.dagger:hilt-android-compiler:${rootProject.extra["hiltVersion"]}")
+    ksp("com.google.dagger:hilt-android-compiler:${rootProject.extra["hiltVersion"]}")
     implementation("androidx.hilt:hilt-navigation-compose:${rootProject.extra["hiltNavigationComposeVersion"]}")
 
     // Coroutines
@@ -172,10 +172,5 @@ dependencies {
 
     // Hilt Testing
     androidTestImplementation("com.google.dagger:hilt-android-testing:${rootProject.extra["hiltVersion"]}")
-    kaptAndroidTest("com.google.dagger:hilt-android-compiler:${rootProject.extra["hiltVersion"]}")
-}
-
-// Allow references to generated code
-kapt {
-    correctErrorTypes = true
+    kspAndroidTest("com.google.dagger:hilt-android-compiler:${rootProject.extra["hiltVersion"]}")
 }
