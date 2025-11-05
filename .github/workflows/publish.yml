@@ -228,19 +228,19 @@ jobs:
           fetch-depth: 0
 
       - name: Download AAB
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: familyhub-aab-${{ needs.validate-tag.outputs.version }}
           path: ./artifacts/
 
       - name: Download Phone APK
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: familyhub-phone-apk-${{ needs.validate-tag.outputs.version }}
           path: ./artifacts/
 
       - name: Download Wear APK
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: familyhub-wear-apk-${{ needs.validate-tag.outputs.version }}
           path: ./artifacts/

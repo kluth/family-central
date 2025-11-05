@@ -164,13 +164,13 @@ jobs:
 
     steps:
       - name: Download Phone debug APK
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: familyhub-phone-debug
           path: ./phone/
 
       - name: Download Wear debug APK
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: familyhub-wear-debug
           path: ./wear/
