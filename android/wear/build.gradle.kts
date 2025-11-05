@@ -64,9 +64,9 @@ dependencies {
     compileOnly("com.google.android.wearable:wearable:2.9.0")
 
     // Wear Compose
-    implementation("androidx.wear.compose:compose-material:1.3.0")
-    implementation("androidx.wear.compose:compose-foundation:1.3.0")
-    implementation("androidx.wear.compose:compose-navigation:1.3.0")
+    implementation("androidx.wear.compose:compose-material:1.5.4")
+    implementation("androidx.wear.compose:compose-foundation:1.5.4")
+    implementation("androidx.wear.compose:compose-navigation:1.5.4")
 
     // Wear Tiles
     implementation("androidx.wear.tiles:tiles:1.3.0")
