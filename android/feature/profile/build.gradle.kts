@@ -2,7 +2,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -66,7 +66,7 @@ dependencies {
 
     // Hilt
     implementation("com.google.dagger:hilt-android:${rootProject.extra["hiltVersion"]}")
-    kapt("com.google.dagger:hilt-android-compiler:${rootProject.extra["hiltVersion"]}")
+    ksp("com.google.dagger:hilt-android-compiler:${rootProject.extra["hiltVersion"]}")
     implementation("androidx.hilt:hilt-navigation-compose:${rootProject.extra["hiltNavigationComposeVersion"]}")
 
     // Coroutines
@@ -84,8 +84,4 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${rootProject.extra["coroutinesVersion"]}")
     testImplementation("app.cash.turbine:turbine:${rootProject.extra["turbineVersion"]}")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
-}
-
-kapt {
-    correctErrorTypes = true
 }
