@@ -1,0 +1,52 @@
+package com.familyhub.core.data.di
+
+import com.familyhub.core.data.repository.FirebaseAuthRepository
+import com.familyhub.core.data.repository.FirebaseFamilyRepository
+import com.familyhub.core.domain.repository.AuthRepository
+import com.familyhub.core.domain.repository.FamilyRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import dagger.Binds
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+/**
+ * Hilt module for data layer dependencies
+ */
+@Module
+@InstallIn(SingletonComponent::class)
+object FirebaseModule {
+
+    @Provides
+    @Singleton
+    fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+
+    @Provides
+    @Singleton
+    fun provideFirebaseFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
+
+    @Provides
+    @Singleton
+    fun provideFirebaseStorage(): FirebaseStorage = FirebaseStorage.getInstance()
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class RepositoryModule {
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthRepository(
+        impl: FirebaseAuthRepository
+    ): AuthRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindFamilyRepository(
+        impl: FirebaseFamilyRepository
+    ): FamilyRepository
+}
