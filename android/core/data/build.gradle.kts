@@ -3,7 +3,6 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
-    id("com.google.gms.google-services")
 }
 
 android {
@@ -66,4 +65,8 @@ dependencies {
     testImplementation("com.google.truth:truth:${rootProject.extra["truthVersion"]}")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${rootProject.extra["coroutinesVersion"]}")
     testImplementation("app.cash.turbine:turbine:${rootProject.extra["turbineVersion"]}")
+}
+
+kapt {
+    correctErrorTypes = true
 }
