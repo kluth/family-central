@@ -1,9 +1,11 @@
 package com.familyhub.core.data.di
 
 import com.familyhub.core.data.repository.FirebaseAuthRepository
+import com.familyhub.core.data.repository.FirebaseChatRepository
 import com.familyhub.core.data.repository.FirebaseFamilyRepository
 import com.familyhub.core.data.src.main.kotlin.com.familyhub.core.data.repository.FirebaseTaskRepository
 import com.familyhub.core.domain.repository.AuthRepository
+import com.familyhub.core.domain.repository.ChatRepository
 import com.familyhub.core.domain.repository.FamilyRepository
 import com.familyhub.core.domain.repository.TaskRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -57,4 +59,10 @@ abstract class RepositoryModule {
     abstract fun bindTaskRepository(
         impl: FirebaseTaskRepository
     ): TaskRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindChatRepository(
+        impl: FirebaseChatRepository
+    ): ChatRepository
 }
