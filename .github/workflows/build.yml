@@ -233,7 +233,7 @@ jobs:
           echo "Wear APK Size: ${WEAR_SIZE_MB} MB"
 
       - name: Comment size on PR
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const phoneSize = '${{ steps.apk_sizes.outputs.phone_size_mb }}';
