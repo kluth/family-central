@@ -83,6 +83,26 @@ android {
     }
 }
 
+// Workaround for KSP + BuildConfig issue
+// https://issuetracker.google.com/301245705
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        afterEvaluate {
+            val variantName = variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+
+            // Link BuildConfig generation to KSP
+            val kspTaskName = "ksp${variantName}Kotlin"
+            val buildConfigTaskName = "generate${variantName}BuildConfig"
+
+            project.tasks.findByName(kspTaskName)?.let { kspTask ->
+                project.tasks.findByName(buildConfigTaskName)?.let { buildConfigTask ->
+                    kspTask.dependsOn(buildConfigTask)
+                }
+            }
+        }
+    }
+}
+
 dependencies {
     // Core modules
     implementation(project(":core:auth"))
