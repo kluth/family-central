@@ -1,8 +1,8 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
-    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -84,4 +84,8 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${rootProject.extra["coroutinesVersion"]}")
     testImplementation("app.cash.turbine:turbine:${rootProject.extra["turbineVersion"]}")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
+}
+
+kapt {
+    correctErrorTypes = true
 }
