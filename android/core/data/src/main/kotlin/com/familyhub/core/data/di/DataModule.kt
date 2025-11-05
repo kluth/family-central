@@ -5,7 +5,7 @@ import com.familyhub.core.data.repository.FirebaseCalendarRepository
 import com.familyhub.core.data.repository.FirebaseChatRepository
 import com.familyhub.core.data.repository.FirebaseFamilyRepository
 import com.familyhub.core.data.repository.FirebaseShoppingListRepository
-import com.familyhub.core.data.src.main.kotlin.com.familyhub.core.data.repository.FirebaseTaskRepository
+import com.familyhub.core.data.repository.FirebaseTaskRepository
 import com.familyhub.core.domain.repository.AuthRepository
 import com.familyhub.core.domain.repository.CalendarRepository
 import com.familyhub.core.domain.repository.ChatRepository
