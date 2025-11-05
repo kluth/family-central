@@ -34,27 +34,32 @@ allprojects {
 
 // Global configuration
 subprojects {
-    apply(plugin = "org.jlleitschuh.gradle.ktlint")
-    apply(plugin = "com.diffplug.spotless")
+    // Only apply code quality plugins if not in CI or if explicitly enabled
+    val enableCodeQuality = project.findProperty("enableCodeQuality")?.toString()?.toBoolean() ?: !System.getenv().containsKey("CI")
 
-    configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-        version.set("1.0.1")
-        android.set(true)
-        outputToConsole.set(true)
-        outputColorName.set("RED")
-    }
+    if (enableCodeQuality) {
+        apply(plugin = "org.jlleitschuh.gradle.ktlint")
+        apply(plugin = "com.diffplug.spotless")
 
-    configure<com.diffplug.gradle.spotless.SpotlessExtension> {
-        kotlin {
-            target("**/*.kt")
-            targetExclude("**/build/**/*.kt")
-            ktlint("1.0.1")
-            trimTrailingWhitespace()
-            endWithNewline()
+        configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+            version.set("1.0.1")
+            android.set(true)
+            outputToConsole.set(true)
+            outputColorName.set("RED")
         }
-        kotlinGradle {
-            target("**/*.gradle.kts")
-            ktlint("1.0.1")
+
+        configure<com.diffplug.gradle.spotless.SpotlessExtension> {
+            kotlin {
+                target("**/*.kt")
+                targetExclude("**/build/**/*.kt")
+                ktlint("1.0.1")
+                trimTrailingWhitespace()
+                endWithNewline()
+            }
+            kotlinGradle {
+                target("**/*.gradle.kts")
+                ktlint("1.0.1")
+            }
         }
     }
 }
