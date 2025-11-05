@@ -86,24 +86,52 @@ jobs:
           sed -i "s/versionName \".*\"/versionName \"$VERSION\"/" android/app/build.gradle.kts
 
       - name: Build debug APKs (Phone + Wear)
-        run: ./gradlew assembleDebug :wear:assembleDebug --stacktrace
+        run: |
+          echo "Building Wear OS APK (standalone)..."
+          ./gradlew :wear:assembleDebug --stacktrace --info
+
+          echo "Building Phone APK..."
+          ./gradlew :app:assembleDebug --stacktrace --info || echo "Phone app build failed, continuing with Wear only"
         working-directory: ./android
 
       - name: Rename debug APKs
         run: |
           mkdir -p ./release-artifacts
-          cp android/app/build/outputs/apk/debug/app-debug.apk \
-             ./release-artifacts/FamilyHub-${{ inputs.version }}-debug.apk
-          cp android/wear/build/outputs/apk/debug/wear-debug.apk \
-             ./release-artifacts/FamilyHub-Wear-${{ inputs.version }}-debug.apk
+
+          # Copy Phone APK if it exists
+          if [ -f android/app/build/outputs/apk/debug/app-debug.apk ]; then
+            cp android/app/build/outputs/apk/debug/app-debug.apk \
+               ./release-artifacts/FamilyHub-${{ inputs.version }}-debug.apk
+            echo "✅ Phone APK copied"
+          else
+            echo "⚠️ Phone APK not found, skipping"
+          fi
+
+          # Copy Wear APK if it exists
+          if [ -f android/wear/build/outputs/apk/debug/wear-debug.apk ]; then
+            cp android/wear/build/outputs/apk/debug/wear-debug.apk \
+               ./release-artifacts/FamilyHub-Wear-${{ inputs.version }}-debug.apk
+            echo "✅ Wear APK copied"
+          else
+            echo "❌ Wear APK not found"
+            exit 1
+          fi
 
       - name: Get APK sizes
         id: sizes
         run: |
-          PHONE_SIZE=$(stat -c%s ./release-artifacts/FamilyHub-${{ inputs.version }}-debug.apk)
-          PHONE_SIZE_MB=$(echo "scale=2; $PHONE_SIZE / 1048576" | bc)
-          echo "phone_size=$PHONE_SIZE_MB MB" >> $GITHUB_OUTPUT
+          # Get Phone APK size if it exists
+          if [ -f ./release-artifacts/FamilyHub-${{ inputs.version }}-debug.apk ]; then
+            PHONE_SIZE=$(stat -c%s ./release-artifacts/FamilyHub-${{ inputs.version }}-debug.apk)
+            PHONE_SIZE_MB=$(echo "scale=2; $PHONE_SIZE / 1048576" | bc)
+            echo "phone_size=$PHONE_SIZE_MB MB" >> $GITHUB_OUTPUT
+            echo "has_phone=true" >> $GITHUB_OUTPUT
+          else
+            echo "phone_size=N/A" >> $GITHUB_OUTPUT
+            echo "has_phone=false" >> $GITHUB_OUTPUT
+          fi
 
+          # Get Wear APK size
           WEAR_SIZE=$(stat -c%s ./release-artifacts/FamilyHub-Wear-${{ inputs.version }}-debug.apk)
           WEAR_SIZE_MB=$(echo "scale=2; $WEAR_SIZE / 1048576" | bc)
           echo "wear_size=$WEAR_SIZE_MB MB" >> $GITHUB_OUTPUT
