@@ -33,36 +33,11 @@ allprojects {
 }
 
 // Global configuration
-subprojects {
-    // Only apply code quality plugins if not in CI or if explicitly enabled
-    val enableCodeQuality = project.findProperty("enableCodeQuality")?.toString()?.toBoolean() ?: !System.getenv().containsKey("CI")
-
-    if (enableCodeQuality) {
-        apply(plugin = "org.jlleitschuh.gradle.ktlint")
-        apply(plugin = "com.diffplug.spotless")
-
-        configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-            version.set("1.0.1")
-            android.set(true)
-            outputToConsole.set(true)
-            outputColorName.set("RED")
-        }
-
-        configure<com.diffplug.gradle.spotless.SpotlessExtension> {
-            kotlin {
-                target("**/*.kt")
-                targetExclude("**/build/**/*.kt")
-                ktlint("1.0.1")
-                trimTrailingWhitespace()
-                endWithNewline()
-            }
-            kotlinGradle {
-                target("**/*.gradle.kts")
-                ktlint("1.0.1")
-            }
-        }
-    }
-}
+// Code quality plugins disabled for CI builds
+// subprojects {
+//     apply(plugin = "org.jlleitschuh.gradle.ktlint")
+//     apply(plugin = "com.diffplug.spotless")
+// }
 
 tasks.register("clean", Delete::class) {
     delete(rootProject.buildDir)

@@ -71,10 +71,8 @@ jobs:
           EOF
 
       - name: Build debug APKs (Phone + Wear)
-        run: ./gradlew assembleDebug :wear:assembleDebug --stacktrace --no-daemon -PenableCodeQuality=false
+        run: ./gradlew assembleDebug :wear:assembleDebug --stacktrace --no-daemon
         working-directory: ./android
-        env:
-          CI: true
 
       - name: Upload Phone debug APK
         uses: actions/upload-artifact@v4

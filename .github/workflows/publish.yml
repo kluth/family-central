@@ -109,22 +109,20 @@ jobs:
           sed -i "s/versionName \".*\"/versionName \"$VERSION\"/" android/app/build.gradle.kts
 
       - name: Build release AAB
-        run: ./gradlew bundleRelease --stacktrace --no-daemon -PenableCodeQuality=false
+        run: ./gradlew bundleRelease --stacktrace --no-daemon
         working-directory: ./android
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          CI: true
 
       - name: Build release APKs (Phone + Wear)
-        run: ./gradlew assembleRelease :wear:assembleRelease --stacktrace --no-daemon -PenableCodeQuality=false
+        run: ./gradlew assembleRelease :wear:assembleRelease --stacktrace --no-daemon
         working-directory: ./android
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          CI: true
 
       - name: Sign AAB
         run: |
