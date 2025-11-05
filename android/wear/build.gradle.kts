@@ -19,6 +19,13 @@ android {
     }
 
     buildTypes {
+        debug {
+            isMinifyEnabled = false
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+            isDebuggable = true
+        }
+
         release {
             isMinifyEnabled = true
             proguardFiles(
@@ -53,10 +60,10 @@ android {
 }
 
 dependencies {
-    // Project modules
-    implementation(project(":core:common"))
-    implementation(project(":core:domain"))
-    implementation(project(":core:data"))
+    // Project modules - commented out for standalone build
+    // implementation(project(":core:common"))
+    // implementation(project(":core:domain"))
+    // implementation(project(":core:data"))
 
     // Wear OS
     implementation("androidx.wear:wear:1.3.0")
@@ -100,10 +107,10 @@ dependencies {
     ksp("com.google.dagger:hilt-android-compiler:${rootProject.extra["hiltVersion"]}")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
-    // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
-    implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("com.google.firebase:firebase-firestore-ktx")
+    // Firebase - commented out for standalone build (no google-services.json required)
+    // implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    // implementation("com.google.firebase:firebase-auth-ktx")
+    // implementation("com.google.firebase:firebase-firestore-ktx")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
