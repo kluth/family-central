@@ -87,17 +87,33 @@ jobs:
 
       - name: Build debug APKs (Phone + Wear)
         run: |
-          echo "Building Wear OS APK (standalone)..."
+          echo "========================================="
+          echo "Building Wear OS APK..."
+          echo "========================================="
           ./gradlew :wear:assembleDebug \
             --stacktrace \
             --no-daemon \
-            || echo "Wear build failed"
+            || echo "⚠️ Wear build failed"
 
-          echo "Building Phone APK..."
+          echo ""
+          echo "========================================="
+          echo "Building Phone APK with detailed logging..."
+          echo "========================================="
+          set +e  # Don't exit on error
           ./gradlew :app:assembleDebug \
             --stacktrace \
-            --no-daemon \
-            || echo "Phone app build failed, continuing with Wear only"
+            --warning-mode all \
+            --no-daemon
+
+          PHONE_BUILD_STATUS=$?
+          if [ $PHONE_BUILD_STATUS -ne 0 ]; then
+            echo ""
+            echo "❌ Phone app build failed with exit code: $PHONE_BUILD_STATUS"
+            echo "⚠️ Continuing to create release with Wear APK only..."
+          else
+            echo "✅ Phone app build succeeded"
+          fi
+          set -e
         working-directory: ./android
         env:
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx2g -Dorg.gradle.daemon=false"
