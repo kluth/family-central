@@ -76,7 +76,7 @@ dependencies {
     implementation("androidx.wear.watchface:watchface-complications-data-source-ktx:1.2.0")
 
     // Wear Health Services
-    implementation("androidx.health:health-services-client:1.0.0-beta03")
+    implementation("androidx.health:health-services-client:1.1.0-alpha05")
 
     // Wear Ongoing Activity
     implementation("androidx.wear:wear-ongoing:1.0.0")
