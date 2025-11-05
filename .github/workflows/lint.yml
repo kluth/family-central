@@ -32,7 +32,7 @@ jobs:
 
       - name: Upload ktlint report
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ktlint-report
           path: android/app/build/reports/ktlint/

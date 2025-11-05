@@ -36,7 +36,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: android-unit-test-results
           path: |
@@ -44,7 +44,7 @@ jobs:
             android/**/build/reports/tests/
 
       - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: android-coverage-report
           path: android/**/build/reports/jacoco/
@@ -82,7 +82,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: functions-unit-test-results
           path: functions/test-results/
@@ -143,7 +143,7 @@ jobs:
 
       - name: Upload integration test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: android-integration-test-results
           path: android/**/build/outputs/androidTest-results/
@@ -192,7 +192,7 @@ jobs:
 
       - name: Upload integration test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: functions-integration-test-results
           path: functions/test-results/
