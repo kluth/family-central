@@ -168,19 +168,19 @@ jobs:
              android/wear/build/outputs/apk/release/FamilyHub-Wear-${{ needs.validate-tag.outputs.version }}.apk
 
       - name: Upload signed AAB
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: familyhub-aab-${{ needs.validate-tag.outputs.version }}
           path: android/app/build/outputs/bundle/release/app-release.aab
 
       - name: Upload signed Phone APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: familyhub-phone-apk-${{ needs.validate-tag.outputs.version }}
           path: android/app/build/outputs/apk/release/FamilyHub-${{ needs.validate-tag.outputs.version }}.apk
 
       - name: Upload signed Wear APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: familyhub-wear-apk-${{ needs.validate-tag.outputs.version }}
           path: android/wear/build/outputs/apk/release/FamilyHub-Wear-${{ needs.validate-tag.outputs.version }}.apk
