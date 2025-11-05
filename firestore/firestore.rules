@@ -1,0 +1,403 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================================================
+    // HELPER FUNCTIONS
+    // ============================================================================
+
+    // Check if user is authenticated
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Get authenticated user ID
+    function getUserId() {
+      return request.auth.uid;
+    }
+
+    // Check if user is member of a family
+    function isFamilyMember(familyId) {
+      return isSignedIn() &&
+             exists(/databases/$(database)/documents/families/$(familyId)) &&
+             getUserId() in get(/databases/$(database)/documents/families/$(familyId)).data.members.map(member => member.uid);
+    }
+
+    // Check if user is admin of a family
+    function isFamilyAdmin(familyId) {
+      return isSignedIn() &&
+             exists(/databases/$(database)/documents/families/$(familyId)) &&
+             get(/databases/$(database)/documents/families/$(familyId))
+               .data.members
+               .hasAny([{uid: getUserId(), role: 'admin'}]);
+    }
+
+    // Validate family membership in request data
+    function validateFamilyMembership(familyId) {
+      let family = get(/databases/$(database)/documents/families/$(familyId));
+      return getUserId() in family.data.members.map(member => member.uid);
+    }
+
+    // Check if resource belongs to user's family
+    function resourceBelongsToUserFamily() {
+      return resource.data.familyId in getUserFamilyIds();
+    }
+
+    // Get user's family IDs (requires user document to exist)
+    function getUserFamilyIds() {
+      return get(/databases/$(database)/documents/users/$(getUserId()))
+        .data.familyMemberships.map(membership => membership.familyId);
+    }
+
+    // ============================================================================
+    // USER COLLECTION
+    // ============================================================================
+
+    match /users/{userId} {
+      // Users can read their own profile
+      allow read: if isSignedIn() && userId == getUserId();
+
+      // Users can create their own profile on signup
+      allow create: if isSignedIn() &&
+                       userId == getUserId() &&
+                       request.resource.data.uid == getUserId();
+
+      // Users can update their own profile
+      allow update: if isSignedIn() &&
+                       userId == getUserId() &&
+                       request.resource.data.uid == getUserId();
+
+      // Users cannot delete their profile (must be done by admin)
+      allow delete: if false;
+    }
+
+    // ============================================================================
+    // FAMILY COLLECTION
+    // ============================================================================
+
+    match /families/{familyId} {
+      // Family members can read family data
+      allow read: if isFamilyMember(familyId);
+
+      // Authenticated users can create families
+      allow create: if isSignedIn() &&
+                       request.resource.data.createdBy == getUserId() &&
+                       getUserId() in request.resource.data.members.map(member => member.uid) &&
+                       request.resource.data.members.hasAny([{uid: getUserId(), role: 'admin'}]);
+
+      // Only admins can update family settings
+      allow update: if isFamilyAdmin(familyId) &&
+                       request.resource.data.id == resource.data.id;
+
+      // Only admins can delete families
+      allow delete: if isFamilyAdmin(familyId);
+
+      // Invites subcollection
+      match /invites/{inviteId} {
+        // Family members can read invites
+        allow read: if isFamilyMember(familyId);
+
+        // Only admins can create invites
+        allow create: if isFamilyAdmin(familyId) &&
+                         request.resource.data.familyId == familyId &&
+                         request.resource.data.createdBy == getUserId();
+
+        // Only admins can update/delete invites
+        allow update, delete: if isFamilyAdmin(familyId);
+      }
+    }
+
+    // ============================================================================
+    // TASK COLLECTION
+    // ============================================================================
+
+    match /tasks/{taskId} {
+      // Family members can read tasks in their family
+      allow read: if isSignedIn() &&
+                     isFamilyMember(resource.data.familyId);
+
+      // Family members can create tasks
+      allow create: if isSignedIn() &&
+                       isFamilyMember(request.resource.data.familyId) &&
+                       request.resource.data.createdBy == getUserId() &&
+                       request.resource.data.familyId != null;
+
+      // Assigned users and admins can update tasks
+      allow update: if isSignedIn() &&
+                       isFamilyMember(resource.data.familyId) &&
+                       (getUserId() in resource.data.assignedTo ||
+                        isFamilyAdmin(resource.data.familyId) ||
+                        resource.data.createdBy == getUserId()) &&
+                       request.resource.data.familyId == resource.data.familyId;
+
+      // Only creator or admins can delete tasks
+      allow delete: if isSignedIn() &&
+                       (resource.data.createdBy == getUserId() ||
+                        isFamilyAdmin(resource.data.familyId));
+    }
+
+    // Task Lists
+    match /task_lists/{listId} {
+      allow read: if isSignedIn() &&
+                     isFamilyMember(resource.data.familyId);
+
+      allow create: if isSignedIn() &&
+                       isFamilyMember(request.resource.data.familyId) &&
+                       request.resource.data.createdBy == getUserId();
+
+      allow update: if isSignedIn() &&
+                       isFamilyMember(resource.data.familyId);
+
+      allow delete: if isSignedIn() &&
+                       (resource.data.createdBy == getUserId() ||
+                        isFamilyAdmin(resource.data.familyId));
+    }
+
+    // ============================================================================
+    // CHAT COLLECTION
+    // ============================================================================
+
+    match /chats/{chatId} {
+      // Only participants can read chat metadata
+      allow read: if isSignedIn() &&
+                     isFamilyMember(resource.data.familyId) &&
+                     getUserId() in resource.data.participantIds;
+
+      // Family members can create chats
+      allow create: if isSignedIn() &&
+                       isFamilyMember(request.resource.data.familyId) &&
+                       request.resource.data.createdBy == getUserId() &&
+                       getUserId() in request.resource.data.participantIds;
+
+      // Only participants can update chat
+      allow update: if isSignedIn() &&
+                       getUserId() in resource.data.participantIds &&
+                       request.resource.data.familyId == resource.data.familyId;
+
+      // Only creator or admin can delete chat
+      allow delete: if isSignedIn() &&
+                       (resource.data.createdBy == getUserId() ||
+                        isFamilyAdmin(resource.data.familyId));
+
+      // Messages subcollection
+      match /messages/{messageId} {
+        // Only participants can read messages
+        allow read: if isSignedIn() &&
+                       getUserId() in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds;
+
+        // Only participants can create messages
+        allow create: if isSignedIn() &&
+                         getUserId() in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds &&
+                         request.resource.data.senderId == getUserId();
+
+        // Only sender can update their own message
+        allow update: if isSignedIn() &&
+                         resource.data.senderId == getUserId() &&
+                         request.resource.data.senderId == getUserId();
+
+        // Only sender can delete their own message
+        allow delete: if isSignedIn() &&
+                         resource.data.senderId == getUserId();
+      }
+    }
+
+    // ============================================================================
+    // CALENDAR EVENTS
+    // ============================================================================
+
+    match /calendar_events/{eventId} {
+      // Family members can read events
+      allow read: if isSignedIn() &&
+                     isFamilyMember(resource.data.familyId);
+
+      // Family members can create events
+      allow create: if isSignedIn() &&
+                       isFamilyMember(request.resource.data.familyId) &&
+                       request.resource.data.createdBy == getUserId();
+
+      // Attendees and creator can update events
+      allow update: if isSignedIn() &&
+                       isFamilyMember(resource.data.familyId) &&
+                       (resource.data.createdBy == getUserId() ||
+                        getUserId() in resource.data.attendees.map(a => a.uid));
+
+      // Only creator or admin can delete events
+      allow delete: if isSignedIn() &&
+                       (resource.data.createdBy == getUserId() ||
+                        isFamilyAdmin(resource.data.familyId));
+    }
+
+    // ============================================================================
+    // SHOPPING LISTS
+    // ============================================================================
+
+    match /shopping_lists/{listId} {
+      // Family members can read shopping lists
+      allow read: if isSignedIn() &&
+                     isFamilyMember(resource.data.familyId);
+
+      // Family members can create shopping lists
+      allow create: if isSignedIn() &&
+                       isFamilyMember(request.resource.data.familyId) &&
+                       request.resource.data.createdBy == getUserId();
+
+      // Shared users can update lists
+      allow update: if isSignedIn() &&
+                       isFamilyMember(resource.data.familyId) &&
+                       (getUserId() in resource.data.sharedWith ||
+                        resource.data.createdBy == getUserId());
+
+      // Only creator or admin can delete
+      allow delete: if isSignedIn() &&
+                       (resource.data.createdBy == getUserId() ||
+                        isFamilyAdmin(resource.data.familyId));
+    }
+
+    // ============================================================================
+    // SHARED CONTACTS
+    // ============================================================================
+
+    match /shared_contacts/{contactId} {
+      // All family members can read contacts
+      allow read: if isSignedIn() &&
+                     isFamilyMember(resource.data.familyId);
+
+      // Family members can create contacts
+      allow create: if isSignedIn() &&
+                       isFamilyMember(request.resource.data.familyId) &&
+                       request.resource.data.createdBy == getUserId();
+
+      // Family members can update contacts
+      allow update: if isSignedIn() &&
+                       isFamilyMember(resource.data.familyId);
+
+      // Only creator or admin can delete
+      allow delete: if isSignedIn() &&
+                       (resource.data.createdBy == getUserId() ||
+                        isFamilyAdmin(resource.data.familyId));
+    }
+
+    // ============================================================================
+    // DOCUMENTS
+    // ============================================================================
+
+    match /documents/{documentId} {
+      // Only shared users can read documents
+      allow read: if isSignedIn() &&
+                     isFamilyMember(resource.data.familyId) &&
+                     (getUserId() in resource.data.sharedWith ||
+                      resource.data.uploadedBy == getUserId() ||
+                      isFamilyAdmin(resource.data.familyId));
+
+      // Family members can create documents
+      allow create: if isSignedIn() &&
+                       isFamilyMember(request.resource.data.familyId) &&
+                       request.resource.data.uploadedBy == getUserId();
+
+      // Only uploader and shared users can update
+      allow update: if isSignedIn() &&
+                       (resource.data.uploadedBy == getUserId() ||
+                        getUserId() in resource.data.sharedWith);
+
+      // Only uploader or admin can delete
+      allow delete: if isSignedIn() &&
+                       (resource.data.uploadedBy == getUserId() ||
+                        isFamilyAdmin(resource.data.familyId));
+    }
+
+    // ============================================================================
+    // AI TASKS
+    // ============================================================================
+
+    match /ai_tasks/{taskId} {
+      // Only requester and admins can read AI tasks
+      allow read: if isSignedIn() &&
+                     (resource.data.userId == getUserId() ||
+                      isFamilyAdmin(resource.data.familyId));
+
+      // Users can create AI task requests
+      allow create: if isSignedIn() &&
+                       request.resource.data.userId == getUserId() &&
+                       isFamilyMember(request.resource.data.familyId);
+
+      // Only cloud functions can update AI tasks (via admin SDK)
+      allow update: if false;
+
+      allow delete: if resource.data.userId == getUserId();
+    }
+
+    match /ai_suggestions/{suggestionId} {
+      // Users can read their own suggestions
+      allow read: if isSignedIn() &&
+                     resource.data.userId == getUserId();
+
+      // Only cloud functions can create suggestions
+      allow create: if false;
+
+      // Users can update their acceptance status
+      allow update: if isSignedIn() &&
+                       resource.data.userId == getUserId();
+
+      allow delete: if resource.data.userId == getUserId();
+    }
+
+    // ============================================================================
+    // NOTIFICATIONS
+    // ============================================================================
+
+    match /notifications/{notificationId} {
+      // Users can only read their own notifications
+      allow read: if isSignedIn() &&
+                     resource.data.userId == getUserId();
+
+      // Only cloud functions can create notifications
+      allow create: if false;
+
+      // Users can mark notifications as read
+      allow update: if isSignedIn() &&
+                       resource.data.userId == getUserId() &&
+                       request.resource.data.userId == resource.data.userId;
+
+      // Users can delete their notifications
+      allow delete: if isSignedIn() &&
+                       resource.data.userId == getUserId();
+    }
+
+    // ============================================================================
+    // WEEKLY SUMMARIES
+    // ============================================================================
+
+    match /weekly_summaries/{summaryId} {
+      // Family members can read summaries
+      allow read: if isSignedIn() &&
+                     isFamilyMember(resource.data.familyId);
+
+      // Only cloud functions can create/update summaries
+      allow create, update, delete: if false;
+    }
+
+    // ============================================================================
+    // TYPING INDICATORS
+    // ============================================================================
+
+    match /typing_indicators/{chatId}/users/{userId} {
+      // Participants can read typing indicators
+      allow read: if isSignedIn() &&
+                     getUserId() in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds;
+
+      // Users can only update their own typing status
+      allow write: if isSignedIn() &&
+                      userId == getUserId() &&
+                      getUserId() in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds;
+    }
+
+    // ============================================================================
+    // DEFAULT DENY
+    // ============================================================================
+
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

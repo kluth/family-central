@@ -1,0 +1,211 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "tasks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "familyId", "order": "ASCENDING"},
+        {"fieldPath": "status", "order": "ASCENDING"},
+        {"fieldPath": "dueDate", "order": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "tasks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "familyId", "order": "ASCENDING"},
+        {"fieldPath": "assignedTo", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "status", "order": "ASCENDING"},
+        {"fieldPath": "dueDate", "order": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "tasks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "familyId", "order": "ASCENDING"},
+        {"fieldPath": "priority", "order": "DESCENDING"},
+        {"fieldPath": "createdAt", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "tasks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "familyId", "order": "ASCENDING"},
+        {"fieldPath": "createdBy", "order": "ASCENDING"},
+        {"fieldPath": "createdAt", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "messages",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {"fieldPath": "chatId", "order": "ASCENDING"},
+        {"fieldPath": "timestamp", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "messages",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {"fieldPath": "chatId", "order": "ASCENDING"},
+        {"fieldPath": "senderId", "order": "ASCENDING"},
+        {"fieldPath": "timestamp", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "messages",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {"fieldPath": "familyId", "order": "ASCENDING"},
+        {"fieldPath": "mentions", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "timestamp", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "calendar_events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "familyId", "order": "ASCENDING"},
+        {"fieldPath": "startDate", "order": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "calendar_events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "familyId", "order": "ASCENDING"},
+        {"fieldPath": "eventType", "order": "ASCENDING"},
+        {"fieldPath": "startDate", "order": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "calendar_events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "familyId", "order": "ASCENDING"},
+        {"fieldPath": "attendees", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "startDate", "order": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "shopping_lists",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "familyId", "order": "ASCENDING"},
+        {"fieldPath": "isArchived", "order": "ASCENDING"},
+        {"fieldPath": "updatedAt", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "shared_contacts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "familyId", "order": "ASCENDING"},
+        {"fieldPath": "contactType", "order": "ASCENDING"},
+        {"fieldPath": "displayName", "order": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "shared_contacts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "familyId", "order": "ASCENDING"},
+        {"fieldPath": "isFavorite", "order": "DESCENDING"},
+        {"fieldPath": "displayName", "order": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "documents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "familyId", "order": "ASCENDING"},
+        {"fieldPath": "category", "order": "ASCENDING"},
+        {"fieldPath": "uploadedAt", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "documents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "familyId", "order": "ASCENDING"},
+        {"fieldPath": "sharedWith", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "uploadedAt", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "documents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "familyId", "order": "ASCENDING"},
+        {"fieldPath": "isArchived", "order": "ASCENDING"},
+        {"fieldPath": "uploadedAt", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "notifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "userId", "order": "ASCENDING"},
+        {"fieldPath": "isRead", "order": "ASCENDING"},
+        {"fieldPath": "createdAt", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "notifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "userId", "order": "ASCENDING"},
+        {"fieldPath": "type", "order": "ASCENDING"},
+        {"fieldPath": "createdAt", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "ai_tasks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "familyId", "order": "ASCENDING"},
+        {"fieldPath": "status", "order": "ASCENDING"},
+        {"fieldPath": "createdAt", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "ai_suggestions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "familyId", "order": "ASCENDING"},
+        {"fieldPath": "userId", "order": "ASCENDING"},
+        {"fieldPath": "isAccepted", "order": "ASCENDING"},
+        {"fieldPath": "createdAt", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "weekly_summaries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "familyId", "order": "ASCENDING"},
+        {"fieldPath": "weekStartDate", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "chats",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "familyId", "order": "ASCENDING"},
+        {"fieldPath": "participantIds", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "updatedAt", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "chats",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "familyId", "order": "ASCENDING"},
+        {"fieldPath": "type", "order": "ASCENDING"},
+        {"fieldPath": "updatedAt", "order": "DESCENDING"}
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

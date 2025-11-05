@@ -1,0 +1,143 @@
+package com.familyhub.app.navigation
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.familyhub.app.ui.home.HomeScreen
+import com.familyhub.feature.calendar.ui.CalendarScreen
+import com.familyhub.feature.chat.ui.ChatScreen
+import com.familyhub.feature.profile.ui.ProfileScreen
+import com.familyhub.feature.profile.ui.SignInScreen
+import com.familyhub.feature.profile.ui.SignUpScreen
+import com.familyhub.feature.shared_data.ui.ShoppingListScreen
+import com.familyhub.feature.tasks.ui.TaskListScreen
+
+/**
+ * NavGraph
+ * Main navigation graph for the app with all features
+ */
+@Composable
+fun NavGraph(
+    navController: NavHostController,
+    modifier: Modifier = Modifier
+) {
+    NavHost(
+        navController = navController,
+        startDestination = NavRoute.START_DESTINATION,
+        modifier = modifier
+    ) {
+        // Sign In Screen
+        composable(NavRoute.SignIn.route) {
+            SignInScreen(
+                onSignInSuccess = {
+                    navController.navigate(NavRoute.Home.route) {
+                        popUpTo(NavRoute.SignIn.route) { inclusive = true }
+                    }
+                },
+                onNavigateToSignUp = {
+                    navController.navigate(NavRoute.SignUp.route)
+                },
+                onForgotPassword = {
+                    navController.navigate(NavRoute.ForgotPassword.route)
+                }
+            )
+        }
+
+        // Sign Up Screen
+        composable(NavRoute.SignUp.route) {
+            SignUpScreen(
+                onSignUpSuccess = {
+                    navController.navigate(NavRoute.Home.route) {
+                        popUpTo(NavRoute.SignIn.route) { inclusive = true }
+                    }
+                },
+                onNavigateToSignIn = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // Forgot Password Screen (placeholder)
+        composable(NavRoute.ForgotPassword.route) {
+            // TODO: Implement ForgotPasswordScreen
+        }
+
+        // Home Dashboard Screen
+        composable(NavRoute.Home.route) {
+            HomeScreen(
+                onNavigateToTasks = {
+                    navController.navigate(NavRoute.Tasks.route)
+                },
+                onNavigateToChat = {
+                    navController.navigate(NavRoute.Chat.route)
+                },
+                onNavigateToCalendar = {
+                    navController.navigate(NavRoute.Calendar.route)
+                },
+                onNavigateToShopping = {
+                    navController.navigate(NavRoute.ShoppingList.route)
+                },
+                onNavigateToProfile = {
+                    navController.navigate(NavRoute.Profile.route)
+                }
+            )
+        }
+
+        // Tasks Screen
+        composable(NavRoute.Tasks.route) {
+            TaskListScreen(
+                familyId = "demo-family-123", // TODO: Get actual family ID from auth
+                onNavigateToTaskDetail = { taskId ->
+                    // TODO: Navigate to task detail
+                },
+                onNavigateToCreateTask = {
+                    // TODO: Navigate to create task
+                }
+            )
+        }
+
+        // Chat Screen
+        composable(NavRoute.Chat.route) {
+            ChatScreen(
+                familyId = "demo-family-123", // TODO: Get actual family ID from auth
+                currentUserId = "current-user-id", // TODO: Get from auth
+                currentUserName = "Current User" // TODO: Get from auth
+            )
+        }
+
+        // Calendar Screen
+        composable(NavRoute.Calendar.route) {
+            CalendarScreen(
+                familyId = "demo-family-123" // TODO: Get actual family ID from auth
+            )
+        }
+
+        // Shopping List Screen
+        composable(NavRoute.ShoppingList.route) {
+            ShoppingListScreen(
+                familyId = "demo-family-123" // TODO: Get actual family ID from auth
+            )
+        }
+
+        // Profile Screen
+        composable(NavRoute.Profile.route) {
+            ProfileScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onSignOut = {
+                    navController.navigate(NavRoute.SignIn.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        // Family Selection Screen (placeholder)
+        composable(NavRoute.FamilySelection.route) {
+            // TODO: Implement FamilySelectionScreen
+        }
+    }
+}

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Padding -->
+    <dimen name="padding_extra_small">4dp</dimen>
+    <dimen name="padding_small">8dp</dimen>
+    <dimen name="padding_medium">16dp</dimen>
+    <dimen name="padding_large">24dp</dimen>
+    <dimen name="padding_extra_large">32dp</dimen>
+
+    <!-- Spacing -->
+    <dimen name="spacing_small">4dp</dimen>
+    <dimen name="spacing_medium">8dp</dimen>
+    <dimen name="spacing_large">16dp</dimen>
+
+    <!-- Content Padding for ScalingLazyColumn -->
+    <dimen name="content_padding_top">32dp</dimen>
+    <dimen name="content_padding_bottom">32dp</dimen>
+    <dimen name="content_padding_horizontal">10dp</dimen>
+
+    <!-- Icon Sizes -->
+    <dimen name="icon_size_small">24dp</dimen>
+    <dimen name="icon_size_medium">32dp</dimen>
+    <dimen name="icon_size_large">48dp</dimen>
+    <dimen name="icon_size_extra_large">64dp</dimen>
+
+    <!-- Card -->
+    <dimen name="card_corner_radius">8dp</dimen>
+    <dimen name="card_elevation">2dp</dimen>
+
+    <!-- Chip -->
+    <dimen name="chip_height">52dp</dimen>
+    <dimen name="chip_icon_size">24dp</dimen>
+
+    <!-- Tile -->
+    <dimen name="tile_padding">8dp</dimen>
+    <dimen name="tile_corner_radius">8dp</dimen>
+</resources>

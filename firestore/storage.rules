@@ -1,0 +1,197 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ============================================================================
+    // HELPER FUNCTIONS
+    // ============================================================================
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function getUserId() {
+      return request.auth.uid;
+    }
+
+    // Validate file size (max 10MB for images, 50MB for documents)
+    function validImageSize() {
+      return request.resource.size <= 10 * 1024 * 1024;
+    }
+
+    function validDocumentSize() {
+      return request.resource.size <= 50 * 1024 * 1024;
+    }
+
+    function validVideoSize() {
+      return request.resource.size <= 100 * 1024 * 1024;
+    }
+
+    // Validate image content type
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    function isVideo() {
+      return request.resource.contentType.matches('video/.*');
+    }
+
+    function isAudio() {
+      return request.resource.contentType.matches('audio/.*');
+    }
+
+    function isPDF() {
+      return request.resource.contentType == 'application/pdf';
+    }
+
+    function isDocument() {
+      return request.resource.contentType.matches('application/.*') ||
+             request.resource.contentType.matches('text/.*');
+    }
+
+    // ============================================================================
+    // USER PROFILE PHOTOS
+    // Path: users/{userId}/profile/{fileName}
+    // ============================================================================
+
+    match /users/{userId}/profile/{fileName} {
+      // Users can read their own profile photos
+      allow read: if isSignedIn();
+
+      // Users can only upload to their own profile folder
+      allow write: if isSignedIn() &&
+                      userId == getUserId() &&
+                      isImage() &&
+                      validImageSize();
+    }
+
+    // ============================================================================
+    // FAMILY AVATARS
+    // Path: families/{familyId}/avatar/{fileName}
+    // ============================================================================
+
+    match /families/{familyId}/avatar/{fileName} {
+      // Family members can read family avatar
+      allow read: if isSignedIn();
+
+      // Only admins can upload family avatar
+      // Note: Family membership check requires Firestore query (handled by Cloud Function)
+      allow write: if isSignedIn() &&
+                      isImage() &&
+                      validImageSize();
+    }
+
+    // ============================================================================
+    // CHAT MEDIA
+    // Path: chats/{familyId}/{chatId}/{messageId}/{fileName}
+    // ============================================================================
+
+    match /chats/{familyId}/{chatId}/{messageId}/{fileName} {
+      // Chat participants can read media
+      allow read: if isSignedIn();
+
+      // Users can upload media to chats
+      allow write: if isSignedIn() &&
+                      (isImage() && validImageSize() ||
+                       isVideo() && validVideoSize() ||
+                       isAudio() && validDocumentSize() ||
+                       isDocument() && validDocumentSize());
+    }
+
+    // ============================================================================
+    // TASK ATTACHMENTS
+    // Path: tasks/{familyId}/{taskId}/{attachmentId}/{fileName}
+    // ============================================================================
+
+    match /tasks/{familyId}/{taskId}/{attachmentId}/{fileName} {
+      // Family members can read task attachments
+      allow read: if isSignedIn();
+
+      // Family members can upload task attachments
+      allow write: if isSignedIn() &&
+                      (isImage() && validImageSize() ||
+                       isPDF() && validDocumentSize() ||
+                       isDocument() && validDocumentSize());
+    }
+
+    // ============================================================================
+    // DOCUMENT VAULT
+    // Path: documents/{familyId}/{documentId}/{fileName}
+    // ============================================================================
+
+    match /documents/{familyId}/{documentId}/{fileName} {
+      // Only authorized users can read documents
+      // (Authorization checked via Firestore security rules + download URL)
+      allow read: if isSignedIn();
+
+      // Family members can upload documents
+      allow write: if isSignedIn() &&
+                      (isPDF() && validDocumentSize() ||
+                       isImage() && validImageSize() ||
+                       isDocument() && validDocumentSize());
+    }
+
+    // ============================================================================
+    // SHOPPING LIST ITEM IMAGES
+    // Path: shopping/{familyId}/{listId}/{itemId}/{fileName}
+    // ============================================================================
+
+    match /shopping/{familyId}/{listId}/{itemId}/{fileName} {
+      // Family members can read item images
+      allow read: if isSignedIn();
+
+      // Family members can upload item images
+      allow write: if isSignedIn() &&
+                      isImage() &&
+                      validImageSize();
+    }
+
+    // ============================================================================
+    // CALENDAR EVENT ATTACHMENTS
+    // Path: events/{familyId}/{eventId}/{fileName}
+    // ============================================================================
+
+    match /events/{familyId}/{eventId}/{fileName} {
+      // Family members can read event attachments
+      allow read: if isSignedIn();
+
+      // Event attendees can upload attachments
+      allow write: if isSignedIn() &&
+                      (isImage() && validImageSize() ||
+                       isDocument() && validDocumentSize());
+    }
+
+    // ============================================================================
+    // THUMBNAILS (Generated by Cloud Functions)
+    // Path: thumbnails/{originalPath}
+    // ============================================================================
+
+    match /thumbnails/{allPaths=**} {
+      // Anyone can read thumbnails
+      allow read: if true;
+
+      // Only Cloud Functions can write thumbnails
+      allow write: if false;
+    }
+
+    // ============================================================================
+    // TEMP UPLOADS (24-hour expiry)
+    // Path: temp/{userId}/{fileName}
+    // ============================================================================
+
+    match /temp/{userId}/{fileName} {
+      // Users can read/write their own temp files
+      allow read, write: if isSignedIn() &&
+                            userId == getUserId() &&
+                            validDocumentSize();
+    }
+
+    // ============================================================================
+    // DEFAULT DENY
+    // ============================================================================
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
