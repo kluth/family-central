@@ -1,3 +1,6 @@
+import com.android.build.gradle.tasks.GenerateBuildConfig
+import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompileTool
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -85,19 +88,23 @@ android {
 
 // Workaround for KSP + BuildConfig issue
 // https://issuetracker.google.com/301245705
+// Reference: https://georgimirchev.com/2024/01/14/kapt-to-ksp-migration-and-hilt/
 androidComponents {
     onVariants(selector().all()) { variant ->
         afterEvaluate {
             val variantName = variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 
-            // Link BuildConfig generation to KSP
+            // Set BuildConfig source directory for KSP task
+            // This ensures KSP can resolve BuildConfig before processing annotations
             val kspTaskName = "ksp${variantName}Kotlin"
             val buildConfigTaskName = "generate${variantName}BuildConfig"
 
-            project.tasks.findByName(kspTaskName)?.let { kspTask ->
-                project.tasks.findByName(buildConfigTaskName)?.let { buildConfigTask ->
-                    kspTask.dependsOn(buildConfigTask)
-                }
+            try {
+                val kspTask = project.tasks.getByName(kspTaskName) as AbstractKotlinCompileTool<*>
+                val buildConfigTask = project.tasks.getByName(buildConfigTaskName) as GenerateBuildConfig
+                kspTask.setSource(buildConfigTask.sourceOutputDir)
+            } catch (e: Exception) {
+                logger.warn("Could not configure KSP BuildConfig workaround for variant ${variant.name}: ${e.message}")
             }
         }
     }
