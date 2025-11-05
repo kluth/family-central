@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.familyhub.feature.profile.ui.SignInScreen
 import com.familyhub.feature.profile.ui.SignUpScreen
+import com.familyhub.feature.tasks.ui.TaskListScreen
 
 /**
  * NavGraph
@@ -58,9 +59,19 @@ fun NavGraph(
             // TODO: Implement ForgotPasswordScreen
         }
 
-        // Home Screen (placeholder)
+        // Home Screen (redirects to tasks for now)
         composable(NavRoute.Home.route) {
-            // TODO: Implement HomeScreen
+            // TODO: Implement proper home dashboard
+            // For now, navigate to tasks
+            TaskListScreen(
+                familyId = "demo-family-123", // TODO: Get actual family ID from auth
+                onNavigateToTaskDetail = { taskId ->
+                    // TODO: Navigate to task detail
+                },
+                onNavigateToCreateTask = {
+                    // TODO: Navigate to create task
+                }
+            )
         }
 
         // Family Selection Screen (placeholder)
@@ -68,9 +79,17 @@ fun NavGraph(
             // TODO: Implement FamilySelectionScreen
         }
 
-        // Tasks Screen (placeholder)
+        // Tasks Screen
         composable(NavRoute.Tasks.route) {
-            // TODO: Implement TasksScreen
+            TaskListScreen(
+                familyId = "demo-family-123", // TODO: Get actual family ID from auth
+                onNavigateToTaskDetail = { taskId ->
+                    // TODO: Navigate to task detail
+                },
+                onNavigateToCreateTask = {
+                    // TODO: Navigate to create task
+                }
+            )
         }
 
         // Chat Screen (placeholder)

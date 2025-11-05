@@ -2,8 +2,10 @@ package com.familyhub.core.data.di
 
 import com.familyhub.core.data.repository.FirebaseAuthRepository
 import com.familyhub.core.data.repository.FirebaseFamilyRepository
+import com.familyhub.core.data.src.main.kotlin.com.familyhub.core.data.repository.FirebaseTaskRepository
 import com.familyhub.core.domain.repository.AuthRepository
 import com.familyhub.core.domain.repository.FamilyRepository
+import com.familyhub.core.domain.repository.TaskRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -49,4 +51,10 @@ abstract class RepositoryModule {
     abstract fun bindFamilyRepository(
         impl: FirebaseFamilyRepository
     ): FamilyRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindTaskRepository(
+        impl: FirebaseTaskRepository
+    ): TaskRepository
 }
