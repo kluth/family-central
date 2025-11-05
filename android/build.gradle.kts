@@ -25,13 +25,6 @@ plugins {
     id("com.diffplug.spotless") version "6.23.3" apply false
 }
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
 // Global configuration
 // Code quality plugins disabled for CI builds
 // subprojects {
