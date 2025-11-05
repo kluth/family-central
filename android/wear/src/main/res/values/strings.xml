@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App Name -->
+    <string name="app_name">FamilyHub</string>
+    <string name="wear_app_name">FamilyHub Wear</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_tasks">Tasks</string>
+    <string name="nav_messages">Messages</string>
+    <string name="nav_shopping">Shopping</string>
+    <string name="nav_health">Health</string>
+
+    <!-- Home Screen -->
+    <string name="home_title">FamilyHub</string>
+    <string name="home_subtitle">Your family at a glance</string>
+    <string name="home_tasks">Tasks</string>
+    <string name="home_messages">Messages</string>
+    <string name="home_shopping">Shopping</string>
+    <string name="home_health">Health</string>
+
+    <!-- Tasks Screen -->
+    <string name="tasks_title">My Tasks</string>
+    <string name="tasks_add">Add Task</string>
+    <string name="tasks_empty">No tasks yet</string>
+    <string name="tasks_voice_input">Voice input</string>
+    <string name="tasks_high_priority">High Priority</string>
+    <string name="tasks_medium_priority">Medium Priority</string>
+    <string name="tasks_low_priority">Low Priority</string>
+
+    <!-- Messages Screen -->
+    <string name="messages_title">Family Chat</string>
+    <string name="messages_reply">Quick Reply</string>
+    <string name="messages_empty">No messages</string>
+    <string name="messages_new">New message</string>
+
+    <!-- Shopping Screen -->
+    <string name="shopping_title">Shopping List</string>
+    <string name="shopping_completed">%1$d / %2$d completed</string>
+    <string name="shopping_empty">List is empty</string>
+    <string name="shopping_add">Add Item</string>
+
+    <!-- Health Screen -->
+    <string name="health_title">Health &amp; Fitness</string>
+    <string name="health_steps">steps today</string>
+    <string name="health_heart_rate">bpm</string>
+    <string name="health_resting">Resting</string>
+    <string name="health_active">Active</string>
+    <string name="health_start_walk">Start Walk</string>
+    <string name="health_start_run">Start Run</string>
+    <string name="health_workout">Workout</string>
+    <string name="health_goal_progress">%1$d%% to goal</string>
+
+    <!-- Tiles -->
+    <string name="tile_tasks_title">Tasks</string>
+    <string name="tile_shopping_title">Shopping</string>
+    <string name="tile_no_data">No data available</string>
+
+    <!-- Complications -->
+    <string name="complication_tasks_short">Tasks</string>
+    <string name="complication_tasks_long">%1$d of %2$d tasks</string>
+    <string name="complication_messages_short">Msgs</string>
+    <string name="complication_messages_long">%1$d new messages</string>
+    <string name="complication_no_messages">No new messages</string>
+
+    <!-- Health Tracking -->
+    <string name="health_tracking_active">Tracking your activity</string>
+    <string name="health_tracking_paused">Activity tracking paused</string>
+    <string name="health_permission_required">Health permission required</string>
+
+    <!-- Sync -->
+    <string name="sync_in_progress">Syncing with phone…</string>
+    <string name="sync_completed">Sync completed</string>
+    <string name="sync_failed">Sync failed</string>
+
+    <!-- Actions -->
+    <string name="action_done">Done</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_ok">OK</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_refresh">Refresh</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_task_checkbox">Task completion checkbox</string>
+    <string name="cd_shopping_checkbox">Shopping item checkbox</string>
+    <string name="cd_voice_input">Voice input button</string>
+    <string name="cd_back">Go back</string>
+</resources>

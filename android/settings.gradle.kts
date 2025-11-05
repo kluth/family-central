@@ -32,3 +32,6 @@ include(":feature:tasks")
 include(":feature:calendar")
 include(":feature:shared_data")
 include(":feature:profile")
+
+// Wear OS module
+include(":wear")
