@@ -27,11 +27,11 @@ plugins {
 }
 
 // Global configuration
-// Code quality plugins disabled for CI builds
-// subprojects {
-//     apply(plugin = "org.jlleitschuh.gradle.ktlint")
-//     apply(plugin = "com.diffplug.spotless")
-// }
+// Apply ktlint to all subprojects
+subprojects {
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    apply(plugin = "com.diffplug.spotless")
+}
 
 tasks.register("clean", Delete::class) {
     delete(rootProject.buildDir)
