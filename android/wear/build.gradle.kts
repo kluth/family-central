@@ -46,7 +46,7 @@ dependencies {
     // Minimal Wear OS dependencies
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("com.google.android.support:wearable:2.9.0")
-    implementation("androidx.wear:wear:1.3.0")
+    implementation("androidx.wear:wear:1.4.0")
 
     // Minimal Compose dependencies
     implementation(platform("androidx.compose:compose-bom:2023.10.01"))
