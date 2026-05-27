@@ -58,7 +58,7 @@ dependencies {
 
     implementation("com.google.dagger:hilt-android:${rootProject.extra["hiltVersion"]}")
     ksp("com.google.dagger:hilt-android-compiler:${rootProject.extra["hiltVersion"]}")
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
 
     implementation("com.jakewharton.timber:timber:5.0.1")
 
